@@ -1,34 +1,36 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { contactsSlice } from './contactSlice';
 import { filterSlice } from './filterSlice';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+
+const persistConfig = {
+  key: 'contacts',
+  storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, contactsSlice.reducer);
 
 export const store = configureStore({
   reducer: {
-    contacts: contactsSlice.reducer,
+    contacts: persistedReducer,
     filter: filterSlice.reducer,
   },
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }),
 });
 
-// import { configureStore } from '@reduxjs/toolkit';
-// import { reducer } from './reducer';
-// import { persistStore, persistReducer } from 'redux-persist';
-// import { phonebookSlice } from './counterSlise';
-// import storage from 'redux-persist/lib/storage';
-
-// const persistConfig = {
-//   key: 'contacts',
-//   storage,
-// };
-
-// const persistedReducer = persistReducer(persistConfig, phonebookReducer);
-
-// export const store = configureStore({
-//   reducer: { phonebook: phonebookSlice.reducer },
-// });
-
-// export const persistor = persistStore(store);
-// export default () => {
-//   let store = createStore(persistedReducer);
-//   let persistor = persistStore(store);
-//   return { store, persistor };
-// };
+export const persistor = persistStore(store);
