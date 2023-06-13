@@ -1,5 +1,4 @@
 import { createSlice, nanoid } from '@reduxjs/toolkit';
-import { useState } from 'react';
 
 export const contactsSlice = createSlice({
   name: 'contacts',
